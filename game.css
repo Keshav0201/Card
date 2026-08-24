@@ -1,0 +1,202 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    background: #f4f6f8;
+    color: #222;
+}
+
+/* Main container */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+/* Round heading */
+#playersDisplay {
+    font-size: 28px;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+/* Players container */
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Individual player card */
+.div_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background: white;
+    padding: 20px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+    width: 100%;
+}
+
+/* Player name */
+.div_box h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+/* Score */
+.div_box h4 {
+    font-size: 18px;
+    margin: 15px 0;
+}
+
+/* Number buttons container */
+.numberBTNS {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Number buttons */
+.numberBtn {
+    width: 50px;
+    height: 40px;
+
+    border-radius: 10px;
+    border: none;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.numberBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+/* Answer buttons */
+.answerBtns {
+    display: flex;
+    gap: 15px;
+}
+
+/* Won / Lost buttons */
+.pResultBtn {
+    width: 100px;
+    height: 40px;
+
+    border-radius: 10px;
+    border: none;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.pResultBtn:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+/* Selected number */
+.selected {
+    background-color: #20d720;
+    color: white;
+}
+
+/* Won */
+.tick {
+    background-color: #10f610;
+    color: black;
+}
+
+/* Lost */
+.cross {
+    background-color: #ff3333;
+    color: white;
+}
+
+/* Rejected */
+.rejected {
+    background-color: red;
+    color: white;
+}
+
+/* Waiting */
+.waiting {
+    background-color: #aaa;
+    color: white;
+}
+
+/* Next round */
+#nextRoundBTN {
+    margin-top: 25px;
+
+    width: 200px;
+    height: 45px;
+
+    border-radius: 10px;
+    border: none;
+
+    background-color: #00d9ff;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+#nextRoundBTN:hover:not(:disabled) {
+    background-color: #00b8d9;
+    transform: translateY(-2px);
+}
+
+/* Disabled buttons */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* Mobile */
+@media (max-width: 500px) {
+
+    .container {
+        padding: 20px 10px;
+    }
+
+    #playersDisplay {
+        font-size: 24px;
+    }
+
+    .div_box {
+        padding: 15px;
+    }
+
+    .pResultBtn {
+        width: 90px;
+    }
+}

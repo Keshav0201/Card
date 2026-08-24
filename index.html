@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f2f2f2;
+        }
+
+        .container {
+            width: 400px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        #playerInputs {
+            margin-top: 10px;
+        }
+
+        .playerInput {
+            margin-bottom: 10px;
+        }
+
+        #startGame {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #222;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #startGame:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Card Game</h1>
+
+        <label for="numPlayers">
+            Number of Players
+        </label>
+
+        <select id="numPlayers">
+            <option value="">Select Players</option>
+            <option value="2">2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4">4 Players</option>
+            <option value="5">5 Players</option>
+            <option value="6">6 Players</option>
+        </select>
+
+        <div id="playerInputs"></div>
+
+        <button id="startGame">
+            Start Game
+        </button>
+
+    </div>
+
+    <script>
+
+        const numPlayers = document.getElementById("numPlayers");
+        const playerInputs = document.getElementById("playerInputs");
+        const startGame = document.getElementById("startGame");
+
+
+        // Create name inputs
+        numPlayers.addEventListener("change", () => {
+
+            const count = Number(numPlayers.value);
+
+            playerInputs.innerHTML = "";
+
+            for (let i = 1; i <= count; i++) {
+
+                playerInputs.innerHTML += `
+                    <input
+                        type="text"
+                        class="playerInput"
+                        id="player${i}"
+                        placeholder="Enter Player ${i} name"
+                    >
+                `;
+
+            }
+
+        });
+
+
+        // Start game
+        startGame.addEventListener("click", () => {
+
+            const count = Number(numPlayers.value);
+
+            if (!count) {
+                alert("Please select number of players");
+                return;
+            }
+
+
+            const playerNames = [];
+
+            for (let i = 1; i <= count; i++) {
+
+                const name =
+                    document.getElementById(`player${i}`).value.trim();
+
+                if (name === "") {
+                    alert(`Please enter Player ${i}'s name`);
+                    return;
+                }
+
+                playerNames.push(name);
+            }
+
+
+            // Save names
+            localStorage.setItem(
+                "playerNames",
+                JSON.stringify(playerNames)
+            );
+
+
+            // Go to game
+            window.location.href =
+                `game.html?players=${count}`;
+
+        });
+
+    </script>
+
+</body>
+</html>
