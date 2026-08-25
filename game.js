@@ -94,7 +94,6 @@ function updateRound() {
   let c = 1;
 
   while (c <= noOfPlayers) {
-    let forbiddenHtml = "";
 
     let newDiv = document.createElement("div");
     newDiv.classList.add("div_box");
@@ -111,7 +110,6 @@ function updateRound() {
 
     newDiv.innerHTML = `
         <h3 id="player${i}">${players[i - 1].name}</h3>
-        <h4 id="forbid${i}" class="forbid">${forbiddenHtml}</h4>
 
         <div class="numberBTNS">
           ${html}
@@ -149,7 +147,7 @@ function updateForbidden(id){
   if (startingplayer == 0) {
     startingplayer = noOfPlayers;
   }
-  let ender = (startingplayer - 1)%noOfPlayers;
+  let ender = ((startingplayer - 1)%noOfPlayers);
   if(ender == 0){
     ender = noOfPlayers;
   }
@@ -161,15 +159,31 @@ function updateForbidden(id){
     }
     sum += players[i].selected;
   }
-  console.log(`sum: ${sum}`);
+  console.log(`sum: ${sum}, round: ${round}, ender: ${ender}`);
+  enableNumberButtons(ender);
   if (round > 4) {
-      let forbiddenHtml = `(❌:${round - sum})
-      `;
-      if(sum > round){
-        forbiddenHtml = "";
+      if(sum <= round){
+        const forbidden = round - sum;
+        const btnId = `p${ender}n${forbidden}`;
+        const button = document.getElementById(btnId);
+        button.disabled = true;
+        button.classList.remove("waiting");
+        button.classList.add("rejected");
       }
-      document.getElementById(`forbid${ender}`).innerText = forbiddenHtml;
     } 
+}
+
+function enableNumberButtons(id) {
+  for (let i = 0; i <= round; i++) {
+    const btnId = `p${id}n${i}`;
+    const button = document.getElementById(btnId);
+
+    if (button) {
+      button.disabled = false;
+      button.classList.remove("rejected");
+      button.classList.add("waiting");
+    }
+  }
 }
 
 updateRound();
