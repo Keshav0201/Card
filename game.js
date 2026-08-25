@@ -4,8 +4,13 @@ const noOfPlayers = Number(urlParams.get("players"));
 const playersDisplay = document.getElementById("playersDisplay");
 const gameContainer = document.getElementById("gameContainer");
 const nextRoundBTN = document.getElementById("nextRoundBTN");
+const leaderboardContainer = document.getElementById("leaderboardContainer");
+const container = document.getElementById("Container");
+container.style.display = "flex";
+leaderboardContainer.style.display = "none";
 
 nextRoundBTN.disabled = false;
+const maxRounds = 2;
 
 let game = JSON.parse(localStorage.getItem("game")) || {
   round: 1,
@@ -238,28 +243,87 @@ gameContainer.addEventListener("click", (event) => {
   saveGame();
 });
 
+function displayLeaderboard() {
+  container.style.display = "none";
+  leaderboardContainer.style.display = "block";
+  leaderboardContainer.innerHTML = "";
+
+  // Sort players by score in descending order
+  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+
+  // Title
+  const title = document.createElement("h1");
+  title.classList.add("leaderboard-title");
+  title.innerText = "🏆 Final Leaderboard";
+  leaderboardContainer.appendChild(title);
+
+  // Leaderboard
+  sortedPlayers.forEach((player, index) => {
+    const playerDiv = document.createElement("div");
+    playerDiv.classList.add("leaderboard-entry");
+
+    if (index === 0) {
+      playerDiv.classList.add("first-place");
+    } else if (index === 1) {
+      playerDiv.classList.add("second-place");
+    } else if (index === 2) {
+      playerDiv.classList.add("third-place");
+    }
+
+    playerDiv.innerHTML = `
+      <div class="rank">
+        ${index + 1}
+      </div>
+
+      <div class="player-info">
+        <h3>${player.name}</h3>
+        <p>${index === 0 ? "🏆 Winner" : "Player"}</p>
+      </div>
+
+      <div class="player-score">
+        ${player.score}
+        <span>pts</span>
+      </div>
+    `;
+
+    leaderboardContainer.appendChild(playerDiv);
+  });
+
+  // New Game button
+  const newGameButton = document.createElement("button");
+  newGameButton.id = "newGameBtn";
+  newGameButton.innerText = "🎮 New Game";
+
+  newGameButton.addEventListener("click", () => {
+    localStorage.removeItem("game");
+    location.reload();
+  });
+
+  leaderboardContainer.appendChild(newGameButton);
+}
+
 nextRoundBTN.addEventListener("click", (e) => {
   if (ans != noOfPlayers) {
     alert("Please select status of each");
     return;
   }
   ans = 0;
-  
+
   // RESET SELECTED FOR NEXT ROUND
   players.forEach((player) => {
     player.selected = -1;
   });
 
   if (forward) {
-    if (round < 8) {
+    if (round < maxRounds) {
       round++;
-    } else if (round == 8) {
+    } else if (round == maxRounds) {
       forward = false;
     }
   } else {
     if (round == 1) {
-      forward = true;
-    } else if (round <= 8) {
+      displayLeaderboard();
+    } else if (round <= maxRounds) {
       round--;
     }
   }
