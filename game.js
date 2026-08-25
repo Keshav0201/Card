@@ -7,21 +7,29 @@ const nextRoundBTN = document.getElementById("nextRoundBTN");
 
 nextRoundBTN.disabled = false;
 
-let round = 1;
-let forward = true;
-let players = [];
-let ans = 0;
+let game = JSON.parse(localStorage.getItem("game")) || {
+  round: 1,
+  forward: true,
+  ans: 0,
+  players: [],
+};
+
+let round = game.round;
+let forward = game.forward;
+let players = game.players;
+let ans = game.ans;
 
 const playerNames = JSON.parse(localStorage.getItem("playerNames"));
 
-for (let i = 0; i < noOfPlayers; i++) {
-  players[i] = {
-    name: playerNames[i],
-    score: 0,
-    selected: -1,
-  };
+if (players.length == 0) {
+  for (let i = 0; i < noOfPlayers; i++) {
+    players[i] = {
+      name: playerNames[i],
+      score: 0,
+      selected: -1,
+    };
+  }
 }
-
 const fSuits = {
   1: "♠",
   2: "♦",
@@ -43,6 +51,18 @@ const bSuits = {
   2: "♣",
   1: "♥",
 };
+
+function saveGame() {
+  localStorage.setItem(
+    "game",
+    JSON.stringify({
+      round,
+      forward,
+      ans,
+      players,
+    })
+  );
+}
 
 function updateRound() {
   let suit;
@@ -171,7 +191,7 @@ function handleLostRound(id) {
   updateScore(player);
 }
 
-function handleWonUndo(id){
+function handleWonUndo(id) {
   const player = Number(id[4]);
   players[player - 1].score -= Number(players[player - 1].selected + 10);
   updateScore(player);
@@ -184,6 +204,7 @@ gameContainer.addEventListener("click", (event) => {
     if (checkAllSelected()) {
       enableButtons();
     }
+    saveGame();
     return;
   }
 
@@ -194,7 +215,7 @@ gameContainer.addEventListener("click", (event) => {
 
   if (event.target.classList.contains("tick")) {
     const button = document.getElementById(`cross${event.target.id[4]}`);
-    if(button.disabled){
+    if (button.disabled) {
       ans--;
     }
     ans++;
@@ -205,7 +226,7 @@ gameContainer.addEventListener("click", (event) => {
 
   if (event.target.classList.contains("cross")) {
     const button = document.getElementById(`tick${event.target.id[5]}`);
-    if(button.disabled){
+    if (button.disabled) {
       handleWonUndo(button.id);
       ans--;
     }
@@ -214,17 +235,16 @@ gameContainer.addEventListener("click", (event) => {
     handleLostRound(event.target.id);
     document.getElementById(event.target.id).disabled = true;
   }
+  saveGame();
 });
 
 nextRoundBTN.addEventListener("click", (e) => {
   if (ans != noOfPlayers) {
     alert("Please select status of each");
-
     return;
   }
-
   ans = 0;
-
+  
   // RESET SELECTED FOR NEXT ROUND
   players.forEach((player) => {
     player.selected = -1;
@@ -245,4 +265,5 @@ nextRoundBTN.addEventListener("click", (e) => {
   }
 
   updateRound();
+  saveGame();
 });

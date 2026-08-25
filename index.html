@@ -108,7 +108,8 @@
         const numPlayers = document.getElementById("numPlayers");
         const playerInputs = document.getElementById("playerInputs");
         const startGame = document.getElementById("startGame");
-
+        localStorage.removeItem("game");
+        localStorage.removeItem("players");
 
         // Create name inputs
         numPlayers.addEventListener("change", () => {
