@@ -18,34 +18,33 @@ for (let i = 0; i < noOfPlayers; i++) {
   players[i] = {
     name: playerNames[i],
     score: 0,
-    selected: -1
+    selected: -1,
   };
 }
 
 const fSuits = {
-    1: "♠",
-    2: "♦",
-    3: "♣",
-    4: "♥",
-    5: "♠",
-    6: "♦",
-    7: "♣",
-    8: "♥"
+  1: "♠",
+  2: "♦",
+  3: "♣",
+  4: "♥",
+  5: "♠",
+  6: "♦",
+  7: "♣",
+  8: "♥",
 };
 
 const bSuits = {
-    8: "♠",
-    7: "♦",
-    6: "♣",
-    5: "♥",
-    4: "♠",
-    3: "♦",
-    2: "♣",
-    1: "♥"
+  8: "♠",
+  7: "♦",
+  6: "♣",
+  5: "♥",
+  4: "♠",
+  3: "♦",
+  2: "♣",
+  1: "♥",
 };
 
 function updateRound() {
-
   let suit;
 
   if (forward) {
@@ -59,7 +58,6 @@ function updateRound() {
   gameContainer.innerHTML = "";
 
   for (let i = 1; i <= noOfPlayers; i++) {
-
     let newDiv = document.createElement("div");
     newDiv.classList.add("div_box");
 
@@ -103,33 +101,22 @@ function updateRound() {
 updateRound();
 
 function handleNumberButtonClick(id) {
-
   const pName = id[1];
   const btnNumber = id[3];
 
   players[pName - 1].selected = Number(btnNumber);
 
   for (let i = 0; i <= round; i++) {
-
     const btnId = `p${pName}n${i}`;
-
-    console.log(btnId);
-
     const button = document.getElementById(btnId);
 
     button.classList.remove("waiting");
 
     if (btnId == id) {
-
-      console.log(button);
-
       button.classList.add("selected");
       button.disabled = true;
-
     } else {
-
       button.style.display = "none";
-
     }
   }
 }
@@ -143,7 +130,6 @@ function checkAllSelected() {
   return true;
 }
 
-
 function checkAllAnswered() {
   for (let i = 0; i < noOfPlayers; i++) {
     if (players[i].selected != -1) {
@@ -153,7 +139,6 @@ function checkAllAnswered() {
   return true;
 }
 
-
 function enableButtons() {
   const buttons = document.querySelectorAll(".pResultBtn");
   buttons.forEach((b) => {
@@ -161,28 +146,23 @@ function enableButtons() {
   });
 }
 
-
 function disableButtons() {
   const buttons = document.querySelectorAll(".pResultBtn");
   buttons.forEach((b) => {
     b.disabled = true;
   });
-
 }
 
 disableButtons();
 
 function updateScore(player) {
   const disp = document.getElementById(`score${player}`);
-  disp.innerText =
-    `Score - ${players[player - 1].score}`;
+  disp.innerText = `Score - ${players[player - 1].score}`;
 }
-
 
 function handleWonRound(id) {
   const player = Number(id[4]);
-  players[player - 1].score +=
-    Number(players[player - 1].selected + 10);
+  players[player - 1].score += Number(players[player - 1].selected + 10);
   updateScore(player);
 }
 
@@ -191,8 +171,13 @@ function handleLostRound(id) {
   updateScore(player);
 }
 
-gameContainer.addEventListener("click", (event) => {
+function handleWonUndo(id){
+  const player = Number(id[4]);
+  players[player - 1].score -= Number(players[player - 1].selected + 10);
+  updateScore(player);
+}
 
+gameContainer.addEventListener("click", (event) => {
   if (event.target.classList.contains("numberBtn")) {
     const clickedBtnId = event.target.id;
     handleNumberButtonClick(clickedBtnId);
@@ -202,35 +187,37 @@ gameContainer.addEventListener("click", (event) => {
     return;
   }
 
-
   if (!checkAllSelected()) {
     alert("Select guess of each player first");
     return;
   }
 
   if (event.target.classList.contains("tick")) {
+    const button = document.getElementById(`cross${event.target.id[4]}`);
+    if(button.disabled){
+      ans--;
+    }
     ans++;
-    console.log(event.target.id);
+    console.log(ans);
     handleWonRound(event.target.id);
+    document.getElementById(event.target.id).disabled = true;
   }
-
 
   if (event.target.classList.contains("cross")) {
-
+    const button = document.getElementById(`tick${event.target.id[5]}`);
+    if(button.disabled){
+      handleWonUndo(button.id);
+      ans--;
+    }
     ans++;
-
-    console.log("Lost:", event.target.id);
-
+    console.log(ans);
     handleLostRound(event.target.id);
+    document.getElementById(event.target.id).disabled = true;
   }
-
 });
 
-
 nextRoundBTN.addEventListener("click", (e) => {
-
   if (ans != noOfPlayers) {
-
     alert("Please select status of each");
 
     return;
@@ -238,40 +225,24 @@ nextRoundBTN.addEventListener("click", (e) => {
 
   ans = 0;
 
-
   // RESET SELECTED FOR NEXT ROUND
   players.forEach((player) => {
     player.selected = -1;
   });
 
-
   if (forward) {
-
     if (round < 8) {
-
       round++;
-
     } else if (round == 8) {
-
       forward = false;
-
     }
-
   } else {
-
     if (round == 1) {
-
       forward = true;
-
     } else if (round <= 8) {
-
       round--;
-
     }
-
   }
 
-
   updateRound();
-
 });
