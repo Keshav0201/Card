@@ -10,7 +10,7 @@ container.style.display = "flex";
 leaderboardContainer.style.display = "none";
 
 nextRoundBTN.disabled = false;
-const maxRounds = 2;
+const maxRounds = 8;
 
 let game = JSON.parse(localStorage.getItem("game")) || {
   round: 1,
