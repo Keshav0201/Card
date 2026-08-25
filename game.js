@@ -82,18 +82,19 @@ function updateRound() {
 
   gameContainer.innerHTML = "";
   let startingplayer;
-  if(forward){
+  if (forward) {
     startingplayer = round % noOfPlayers;
-  }else{
-    startingplayer = (maxRounds + (maxRounds - round + 1) % noOfPlayers);
+  } else {
+    startingplayer = maxRounds + ((maxRounds - round + 1) % noOfPlayers);
   }
-  if(startingplayer == 0){
+  if (startingplayer == 0) {
     startingplayer = noOfPlayers;
   }
   let i = startingplayer;
-  let c = 0;
+  let c = 1;
 
-  while(c < noOfPlayers){
+  while (c <= noOfPlayers) {
+    let forbiddenHtml = "";
 
     let newDiv = document.createElement("div");
     newDiv.classList.add("div_box");
@@ -110,6 +111,7 @@ function updateRound() {
 
     newDiv.innerHTML = `
         <h3 id="player${i}">${players[i - 1].name}</h3>
+        <h4 id="forbid${i}" class="forbid">${forbiddenHtml}</h4>
 
         <div class="numberBTNS">
           ${html}
@@ -137,13 +139,48 @@ function updateRound() {
   }
 }
 
+function updateForbidden(id){
+  let startingplayer;
+  if (forward) {
+    startingplayer = round % noOfPlayers;
+  } else {
+    startingplayer = maxRounds + ((maxRounds - round + 1) % noOfPlayers);
+  }
+  if (startingplayer == 0) {
+    startingplayer = noOfPlayers;
+  }
+  let ender = (startingplayer - 1)%noOfPlayers;
+  if(ender == 0){
+    ender = noOfPlayers;
+  }
+
+  let sum = 0;
+  for(let i = 0 ; i < noOfPlayers; i++){
+    if(players[i].selected == -1){
+      continue;
+    }
+    sum += players[i].selected;
+  }
+  console.log(`sum: ${sum}`);
+  if (round > 4) {
+      let forbiddenHtml = `(❌:${round - sum})
+      `;
+      if(sum > round){
+        forbiddenHtml = "";
+      }
+      document.getElementById(`forbid${ender}`).innerText = forbiddenHtml;
+    } 
+}
+
 updateRound();
 
 function handleNumberButtonClick(id) {
   const pName = id[1];
+  
   const btnNumber = id[3];
 
   players[pName - 1].selected = Number(btnNumber);
+  updateForbidden(pName);
 
   for (let i = 0; i <= round; i++) {
     const btnId = `p${pName}n${i}`;
