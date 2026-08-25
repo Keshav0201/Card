@@ -81,8 +81,20 @@ function updateRound() {
   playersDisplay.innerText = `Round - ${round} {${suit}}`;
 
   gameContainer.innerHTML = "";
+  let startingplayer;
+  if(forward){
+    startingplayer = round % noOfPlayers;
+  }else{
+    startingplayer = (maxRounds + (maxRounds - round + 1) % noOfPlayers);
+  }
+  if(startingplayer == 0){
+    startingplayer = noOfPlayers;
+  }
+  let i = startingplayer;
+  let c = 0;
 
-  for (let i = 1; i <= noOfPlayers; i++) {
+  while(c < noOfPlayers){
+
     let newDiv = document.createElement("div");
     newDiv.classList.add("div_box");
 
@@ -120,6 +132,8 @@ function updateRound() {
 
     gameContainer.append(newDiv);
     disableButtons();
+    c++;
+    i = (i % noOfPlayers) + 1;
   }
 }
 
@@ -309,7 +323,6 @@ nextRoundBTN.addEventListener("click", (e) => {
   }
   ans = 0;
 
-  // RESET SELECTED FOR NEXT ROUND
   players.forEach((player) => {
     player.selected = -1;
   });
