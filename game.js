@@ -13,7 +13,7 @@ nextRoundBTN.disabled = false;
 const maxRounds = 8;
 
 let game = JSON.parse(localStorage.getItem("game")) || {
-  round: 1,
+  round: 7,
   forward: true,
   ans: 0,
   players: [],
@@ -85,7 +85,7 @@ function updateRound() {
   if (forward) {
     startingplayer = round % noOfPlayers;
   } else {
-    startingplayer = maxRounds + ((maxRounds - round + 1) % noOfPlayers);
+    startingplayer = ((maxRounds + maxRounds - round + 1) % noOfPlayers);
   }
   if (startingplayer == 0) {
     startingplayer = noOfPlayers;
@@ -142,7 +142,7 @@ function updateForbidden(id){
   if (forward) {
     startingplayer = round % noOfPlayers;
   } else {
-    startingplayer = maxRounds + ((maxRounds - round + 1) % noOfPlayers);
+    startingplayer = ((maxRounds + maxRounds - round + 1) % noOfPlayers);
   }
   if (startingplayer == 0) {
     startingplayer = noOfPlayers;
@@ -383,6 +383,7 @@ nextRoundBTN.addEventListener("click", (e) => {
       round++;
     } else if (round == maxRounds) {
       forward = false;
+      round = 8;
     }
   } else {
     if (round == 1) {
