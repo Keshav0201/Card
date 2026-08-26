@@ -13,9 +13,9 @@ nextRoundBTN.disabled = false;
 const maxRounds = 8;
 
 let game = JSON.parse(localStorage.getItem("game")) || {
-  round: 7,
+  round: 1,
   forward: true,
-  ans: 0,
+  ans: [],
   players: [],
 };
 
@@ -33,8 +33,19 @@ if (players.length == 0) {
       score: 0,
       selected: -1,
     };
+    ans[i] = -1;
   }
 }
+
+function updateAnswers() {
+  for (let i = 0; i < ans.length; i++) {
+    ans[i] = -1;
+    players[i].selected = -1;
+  }
+}
+
+updateAnswers();
+
 const fSuits = {
   1: "♠",
   2: "♦",
@@ -85,7 +96,7 @@ function updateRound() {
   if (forward) {
     startingplayer = round % noOfPlayers;
   } else {
-    startingplayer = ((maxRounds + maxRounds - round + 1) % noOfPlayers);
+    startingplayer = (maxRounds + maxRounds - round + 1) % noOfPlayers;
   }
   if (startingplayer == 0) {
     startingplayer = noOfPlayers;
@@ -94,7 +105,6 @@ function updateRound() {
   let c = 1;
 
   while (c <= noOfPlayers) {
-
     let newDiv = document.createElement("div");
     newDiv.classList.add("div_box");
 
@@ -137,24 +147,24 @@ function updateRound() {
   }
 }
 
-function updateForbidden(id){
+function updateForbidden() {
   let startingplayer;
   if (forward) {
     startingplayer = round % noOfPlayers;
   } else {
-    startingplayer = ((maxRounds + maxRounds - round + 1) % noOfPlayers);
+    startingplayer = (maxRounds + maxRounds - round + 1) % noOfPlayers;
   }
   if (startingplayer == 0) {
     startingplayer = noOfPlayers;
   }
-  let ender = ((startingplayer - 1)%noOfPlayers);
-  if(ender == 0){
+  let ender = (startingplayer - 1) % noOfPlayers;
+  if (ender == 0) {
     ender = noOfPlayers;
   }
 
   let sum = 0;
-  for(let i = 0 ; i < noOfPlayers; i++){
-    if(players[i].selected == -1){
+  for (let i = 0; i < noOfPlayers; i++) {
+    if (players[i].selected == -1) {
       continue;
     }
     sum += players[i].selected;
@@ -162,15 +172,15 @@ function updateForbidden(id){
   console.log(`sum: ${sum}, round: ${round}, ender: ${ender}`);
   enableNumberButtons(ender);
   if (round > 4) {
-      if(sum <= round){
-        const forbidden = round - sum;
-        const btnId = `p${ender}n${forbidden}`;
-        const button = document.getElementById(btnId);
-        button.disabled = true;
-        button.classList.remove("waiting");
-        button.classList.add("rejected");
-      }
-    } 
+    if (sum <= round) {
+      const forbidden = round - sum;
+      const btnId = `p${ender}n${forbidden}`;
+      const button = document.getElementById(btnId);
+      button.disabled = true;
+      button.classList.remove("waiting");
+      button.classList.add("rejected");
+    }
+  }
 }
 
 function enableNumberButtons(id) {
@@ -190,11 +200,11 @@ updateRound();
 
 function handleNumberButtonClick(id) {
   const pName = id[1];
-  
+
   const btnNumber = id[3];
 
   players[pName - 1].selected = Number(btnNumber);
-  updateForbidden(pName);
+  updateForbidden();
 
   for (let i = 0; i <= round; i++) {
     const btnId = `p${pName}n${i}`;
@@ -220,15 +230,6 @@ function checkAllSelected() {
   return true;
 }
 
-function checkAllAnswered() {
-  for (let i = 0; i < noOfPlayers; i++) {
-    if (players[i].selected != -1) {
-      return false;
-    }
-  }
-  return true;
-}
-
 function enableButtons() {
   const buttons = document.querySelectorAll(".pResultBtn");
   buttons.forEach((b) => {
@@ -245,26 +246,12 @@ function disableButtons() {
 
 disableButtons();
 
-function updateScore(player) {
-  const disp = document.getElementById(`score${player}`);
-  disp.innerText = `Score - ${players[player - 1].score}`;
-}
-
-function handleWonRound(id) {
-  const player = Number(id[4]);
-  players[player - 1].score += Number(players[player - 1].selected + 10);
-  updateScore(player);
-}
-
-function handleLostRound(id) {
-  const player = Number(id[5]);
-  updateScore(player);
-}
-
-function handleWonUndo(id) {
-  const player = Number(id[4]);
-  players[player - 1].score -= Number(players[player - 1].selected + 10);
-  updateScore(player);
+function updateScores() {
+  for (let i = 0; i < noOfPlayers; i++) {
+    if (ans[i] == 1) {
+      players[i].score += Number(players[i].selected + 10);
+    }
+  }
 }
 
 gameContainer.addEventListener("click", (event) => {
@@ -274,35 +261,16 @@ gameContainer.addEventListener("click", (event) => {
     if (checkAllSelected()) {
       enableButtons();
     }
-    saveGame();
-    return;
-  }
-
-  if (!checkAllSelected()) {
-    alert("Select guess of each player first");
-    return;
   }
 
   if (event.target.classList.contains("tick")) {
-    const button = document.getElementById(`cross${event.target.id[4]}`);
-    if (button.disabled) {
-      ans--;
-    }
-    ans++;
-    console.log(ans);
-    handleWonRound(event.target.id);
+    ans[event.target.id[4] - 1] = 1;
     document.getElementById(event.target.id).disabled = true;
   }
 
   if (event.target.classList.contains("cross")) {
-    const button = document.getElementById(`tick${event.target.id[5]}`);
-    if (button.disabled) {
-      handleWonUndo(button.id);
-      ans--;
-    }
-    ans++;
+    ans[event.target.id[5] - 1] = 0;
     console.log(ans);
-    handleLostRound(event.target.id);
     document.getElementById(event.target.id).disabled = true;
   }
   saveGame();
@@ -368,11 +336,14 @@ function displayLeaderboard() {
 }
 
 nextRoundBTN.addEventListener("click", (e) => {
-  if (ans != noOfPlayers) {
+  if (ans.includes(-1)) {
     alert("Please select status of each");
     return;
   }
-  ans = 0;
+  updateScores();
+  saveGame();
+
+  ans = Array(noOfPlayers).fill(-1);
 
   players.forEach((player) => {
     player.selected = -1;
